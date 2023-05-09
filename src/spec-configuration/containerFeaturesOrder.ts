@@ -49,7 +49,14 @@ export function computeInstallationOrder(features: FeatureSet[]) {
         feature,
         before: new Set(),
         after: new Set(),
-    })).reduce((map, feature) => map.set(feature.feature.sourceInformation.userFeatureId.split(':')[0], feature), new Map<string, FeatureNode>());
+    })).reduce((map, feature) => {
+        //direct-tarball does not have versioning
+        if (feature.feature.sourceInformation.type === 'direct-tarball') {
+            return map.set(feature.feature.sourceInformation.userFeatureId, feature);
+        } else {
+            return map.set(feature.feature.sourceInformation.userFeatureId.split(':')[0], feature);
+        }
+    }, new Map<string, FeatureNode>());
 
     let nodes = [...nodesById.values()];
 
